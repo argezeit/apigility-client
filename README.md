@@ -1,2 +1,1 @@
-# apigility-client
-Client for REST and RPC webservices
+# Client for Apigility REST and RPC webservices
