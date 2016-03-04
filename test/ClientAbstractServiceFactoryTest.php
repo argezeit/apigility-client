@@ -84,6 +84,7 @@ class ClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
                 'base_uri' => 'http://test.dev',
                 'default_headers' => [
                     'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
                 ],
                 'http_client_options' => [
                     'timeout' => 42
@@ -93,7 +94,7 @@ class ClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
         ];
         $this->factory->setConfig($config);
         $client = $this->factory->createServiceWithName($this->serviceLocator, 'testName', 'clientName');
-        $this->assertSame(['Accept' => 'application/json'], $client->getDefaultHeaders());
+        $this->assertSame(['Accept' => 'application/json', 'Content-Type' => 'application/json'], $client->getDefaultHeaders());
         $httpClient = $client->getHttpClient();
         $httpClientConfig = $httpClient->getAdapter()->getConfig();
         $this->assertSame(42, $httpClientConfig['timeout']);
