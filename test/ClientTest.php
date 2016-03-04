@@ -1,5 +1,5 @@
 <?php
-namespace JolichtTest\ApigilityClient\Client;
+namespace JolichtTest\ApigilityClient;
 
 use Jolicht\ApigilityClient\Client;
 use Zend\Http\Client as HttpClient;
