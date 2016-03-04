@@ -1,5 +1,9 @@
 # Client for Apigility REST and RPC webservices
 
+## Installation
+
+`composer require jolicht/apigility-client`
+
 ## Configuration for Zend Framework 2
 
 ### Register Abstract Service Factory
