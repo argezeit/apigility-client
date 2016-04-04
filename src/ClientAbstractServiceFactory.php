@@ -99,6 +99,9 @@ class ClientAbstractServiceFactory implements AbstractFactoryInterface
         if (isset($config['default_headers'])) {
             $client->setDefaultHeaders($config['default_headers']);
         }
+        if (isset($config['throw_exceptions'])) {
+            $client->setThrowExceptions($config['throw_exceptions']);
+        }
         return $client;
     }
 }

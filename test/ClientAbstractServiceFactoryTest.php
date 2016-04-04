@@ -98,5 +98,27 @@ class ClientAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
         $httpClient = $client->getHttpClient();
         $httpClientConfig = $httpClient->getAdapter()->getConfig();
         $this->assertSame(42, $httpClientConfig['timeout']);
+        $this->assertFalse($client->getThrowExceptions());
+    }
+
+    public function testCreateServiceThrowExceptions()
+    {
+        $config = [
+            'clientName' => [
+                'base_uri' => 'http://test.dev',
+                'default_headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ],
+                'throw_exceptions' => true,
+                'http_client_options' => [
+                    'timeout' => 42
+                ],
+
+            ]
+        ];
+        $this->factory->setConfig($config);
+        $client = $this->factory->createServiceWithName($this->serviceLocator, 'testName', 'clientName');
+        $this->assertTrue($client->getThrowExceptions());
     }
 }

@@ -6,6 +6,7 @@ use Zend\Http\Client as HttpClient;
 use Zend\Http\Request;
 use Zend\Http\Response;
 use Zend\Stdlib\Parameters;
+use Jolicht\ApigilityClient\ClientException;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,6 +32,17 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testGetDefaultHeaders()
     {
         $this->assertSame([], $this->client->getDefaultHeaders());
+    }
+
+    public function testGetThrowExceptions()
+    {
+        $this->assertFalse($this->client->getThrowExceptions());
+    }
+
+    public function testSetThrowExceptions()
+    {
+        $this->client->setThrowExceptions(true);
+        $this->assertTrue($this->client->getThrowExceptions());
     }
 
     public function testGetDefaultHeadersStatedInConstructor()
@@ -96,6 +108,35 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals((object) $responseData, $client->create('/testapi', $data));
     }
 
+    public function testCreateInvalidStatusCodeThrowsException()
+    {
+        $request = new Request();
+        $request->setUri('http://test.dev/testapi');
+        $request->setMethod(Request::METHOD_POST);
+        $request->getHeaders()->addHeaders(array(
+            'Accept' => 'application/json',
+        ));
+        $response = new Response();
+        $response->setContent(json_encode([
+            'type' => 'http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html',
+            'title' => 'Forbidden',
+            'status' => 403,
+            'detail' => 'Forbidden'
+        ]));
+        $httpClient = $this->getMock('Zend\Http\Client', array('send'));
+        $httpClient->expects($this->once())
+                         ->method('send')
+                         ->with($this->equalTo($request))
+                         ->will($this->returnValue($response));
+
+        $client = new Client($httpClient, 'http://test.dev/', ['Accept' => 'application/json']);
+        $client->setThrowExceptions(true);
+        $this->expectException('Jolicht\ApigilityClient\ClientException');
+        $this->expectExceptionCode(403);
+        $this->expectExceptionMessage('Forbidden');
+        $client->create('/testapi', []);
+    }
+
     public function testFetch()
     {
         $request = new Request();
@@ -121,6 +162,38 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client = new Client($httpClient, 'http://test.dev/', ['Accept' => 'application/json']);
 
         $this->assertEquals((object) $responseData, $client->fetch('/testapi', 17));
+    }
+
+    public function testFetchInvalidStatusCodeThrowsException()
+    {
+        $request = new Request();
+        $request->setUri('http://test.dev/testapi/17');
+        $request->setMethod(Request::METHOD_GET);
+        $request->getHeaders()->addHeaders(array(
+            'Accept' => 'application/json',
+        ));
+
+        $response = new Response();
+        $response->setContent(json_encode([
+            'type' => 'http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html',
+            'title' => 'Forbidden',
+            'status' => 403,
+            'detail' => 'Forbidden'
+        ]));
+
+        $httpClient = $this->getMock('Zend\Http\Client', array('send'));
+        $httpClient->expects($this->once())
+                         ->method('send')
+                         ->with($this->equalTo($request))
+                         ->will($this->returnValue($response));
+        $client = new Client($httpClient, 'http://test.dev/', ['Accept' => 'application/json']);
+        $client->setThrowExceptions(true);
+
+        $this->expectException('Jolicht\ApigilityClient\ClientException');
+        $this->expectExceptionCode(403);
+        $this->expectExceptionMessage('Forbidden');
+
+        $client->fetch('/testapi', 17);
     }
 
     public function testFetchAll()

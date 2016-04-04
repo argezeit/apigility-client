@@ -34,6 +34,13 @@ class Client
     private $defaultHeaders = [];
 
     /**
+     * Throw exceptions
+     *
+     * @var boolean
+     */
+    private $throwExceptions = false;
+
+    /**
      * Constructor
      *
      * @param HttpClient $httpClient
@@ -99,6 +106,26 @@ class Client
     }
 
     /**
+     * Get throw exceptions
+     *
+     * @return boolean
+     */
+    public function getThrowExceptions()
+    {
+        return $this->throwExceptions;
+    }
+
+    /**
+     * Set throw exceptions
+     *
+     * @param boolean $throwExceptions
+     */
+    public function setThrowExceptions($throwExceptions)
+    {
+        $this->throwExceptions = $throwExceptions;
+    }
+
+    /**
      * Create
      *
      * @param string $api
@@ -106,7 +133,7 @@ class Client
      */
     public function create($api, array $data)
     {
-        return $this->callHttpMethod($this->normalizeUri($api), Request::METHOD_POST, $data);
+        return $this->checkException($this->callHttpMethod($this->normalizeUri($api), Request::METHOD_POST, $data));
     }
 
     public function delete()
@@ -127,7 +154,7 @@ class Client
      */
     public function fetch($api, $id)
     {
-        return $this->callHttpMethod($this->normalizeUri($api, $id), Request::METHOD_GET);
+        return $this->checkException($this->callHttpMethod($this->normalizeUri($api, $id), Request::METHOD_GET));
     }
 
     /**
@@ -138,7 +165,7 @@ class Client
      */
     public function fetchAll($api, array $queryData = [])
     {
-        return $this->callHttpMethod($this->normalizeUri($api), Request::METHOD_GET, $queryData);
+        return $this->checkException($this->callHttpMethod($this->normalizeUri($api), Request::METHOD_GET, $queryData));
     }
 
     /**
@@ -150,7 +177,7 @@ class Client
      */
     public function patch($api, $id, array $data = [])
     {
-        return $this->callHttpMethod($this->normalizeUri($api, $id), Request::METHOD_PATCH, $data);
+        return $this->checkException($this->callHttpMethod($this->normalizeUri($api, $id), Request::METHOD_PATCH, $data));
     }
 
     /**
@@ -162,7 +189,7 @@ class Client
      */
     public function update($api, $id, array $data = [])
     {
-        return $this->callHttpMethod($this->normalizeUri($api, $id), Request::METHOD_PUT, $data);
+        return $this->checkException($this->callHttpMethod($this->normalizeUri($api, $id), Request::METHOD_PUT, $data));
     }
 
     /**
@@ -174,7 +201,32 @@ class Client
      */
     public function call($api, $method = Request::METHOD_GET, array $data = [])
     {
-        return $this->callHttpMethod($this->normalizeUri($api), $method, $data);
+        return $this->checkException($this->callHttpMethod($this->normalizeUri($api), $method, $data));
+    }
+
+    /**
+     * Check if exception should be thrown
+     * @param object $response
+     * @return object
+     * @throws ClientException
+     */
+    private function checkException($response)
+    {
+        if ((true === $this->getThrowExceptions()) and ($this->isErroneousResponse($response))) {
+            throw new ClientException($response->detail, $response->status);
+        }
+        return $response;
+    }
+
+    /**
+     * is erroneous reponse
+     *
+     * @param object $response
+     * @return boolean
+     */
+    private function isErroneousResponse($response)
+    {
+        return (isset($response->type) and isset($response->title) and isset($response->status) and isset($response->detail));
     }
 
     /**

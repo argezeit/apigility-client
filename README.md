@@ -31,6 +31,7 @@ Add config key `apigility_http_client` to your prefered config file.
                 'http_client_options' => [
                     'timeout' => 42
                 ],
+                'throw_exceptions' => false,
             ]
         ],
         'NameOfSecondClient' => [
@@ -47,6 +48,7 @@ Add config key `apigility_http_client` to your prefered config file.
     ],
     
 Always set `default_headers` `Accept` and `Content-Type` to prevent content type errors.
+If `throw_exceptions` is `true` exception is thrown on invalid response status code.
 
 ## Usage
 
