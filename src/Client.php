@@ -254,7 +254,7 @@ class Client
         }
         $request->setMethod($method);
         $request->getHeaders()->addHeaders($this->getDefaultHeaders());
-        return json_decode($this->getHttpClient()->send($request)->getContent());
+        return json_decode($this->getHttpClient()->send($request)->getBody());
     }
 
     /**
