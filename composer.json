@@ -1,5 +1,5 @@
 {
-    "name": "jolicht/apigility-client",
+    "name": "argezeit/apigility-client",
     "description": "Client for REST and RPC webservices",
     "type": "library",
     "license": "MIT",
@@ -8,11 +8,11 @@
         "rest",
         "zf2"
     ],
-    "homepage": "https://github.com/jolicht/apigility-client",
+    "homepage": "https://github.com/argezeit/apigility-client",
     "support": {
         "email": "apigility-users@zend.com",
-        "source": "https://github.com/jolicht/apigility-client",
-        "issues": "https://github.com/jolicht/apigility-client/issues"
+        "source": "https://github.com/argezeit/apigility-client",
+        "issues": "https://github.com/argezeit/apigility-client/issues"
     },
     "require": {
         "php": ">=5.5",
